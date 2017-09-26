@@ -4,7 +4,7 @@ open datab
 [<EntryPoint>]
 let main argv =
     let userList = UserService.getUser RepoUser.getUser "mxManager"
-    userList |> Seq.iter (fun x -> printfn "%A" x)
+    userList |> printfn "%A"
 
     let testUser : Models.User = {
         Id = 3;
@@ -14,8 +14,8 @@ let main argv =
         Role = "r";
         UserFacilityIdLista = "lll"
     }
-    UserService.getUser (fun x -> [testUser]) "mxManager"
-    |> Seq.iter (fun x -> printfn "%A" x)
 
+    UserService.getUser (fun x -> [testUser]) "mxManager"
+    |> printfn "%A"
 
     0
