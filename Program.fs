@@ -12,7 +12,7 @@ let main argv =
         Password = "tttt";
         Active = true;
         Role = "r";
-        UserFacilityIdLista = "lll"
+        UserFacilityIdLista = Some "lll"
     }
 
     UserService.getUser (fun x -> [testUser]) "mxManager"

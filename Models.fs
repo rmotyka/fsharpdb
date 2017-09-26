@@ -6,5 +6,5 @@ type User = {
     Password: string
     Active: bool
     Role: string
-    UserFacilityIdLista: string
+    UserFacilityIdLista: string option
 }
