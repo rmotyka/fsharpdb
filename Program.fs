@@ -68,7 +68,7 @@ let userHandler =
 
 let calcHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        let userList = UserService.getUser RepoUser.getUser "mxManager" |> Async.RunSynchronously
+        let userList = UserService.getUser RepoUser.getUser "mxManager" 
         text userList next ctx
 
 let showUserHandler id =

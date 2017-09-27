@@ -4,8 +4,6 @@ open Newtonsoft.Json
 open Newtonsoft.Json.Converters
 open Models
 
-let getUser (userRepoGetUser: string -> Async<(User seq)>) userName = 
-    async {
-        let! user = userRepoGetUser userName
-        return JsonConvert.SerializeObject(user, IdiomaticDuConverter())
-    }   
+let getUser userRepoGetUser userName = 
+    let user = userRepoGetUser userName
+    JsonConvert.SerializeObject(user, IdiomaticDuConverter())

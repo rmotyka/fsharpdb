@@ -5,7 +5,7 @@ open System.Collections.Generic
 open Dapper
 open Npgsql
 
-let getConnection =
+let getConnection () =
     printfn "GET connection"
     let connection = new NpgsqlConnection("Server=127.0.0.1;Port=5432;Database=cctuwise;User Id=postgres; Password=cctechnology;")
     connection.Open()
@@ -29,17 +29,14 @@ type OptionHandler<'T>() =
         then None
         else Some (value :?> 'T)
 
-SqlMapper.AddTypeHandler (OptionHandler<string>())
-SqlMapper.AddTypeHandler (OptionHandler<int>())
-
-
 let dbQuery<'T> (sql: string) (parameters: (string * obj) list option) = 
-    use connection = getConnection
+    SqlMapper.AddTypeHandler (OptionHandler<string>())
+    SqlMapper.AddTypeHandler (OptionHandler<int>())
+    use connection = getConnection ()
     match parameters with
     | Some(p) ->
         let args = new Dictionary<string, obj>()
         p |> List.iter (fun (key, value) -> args.Add(key, value))
-        connection.QueryAsync<'T>(sql, args)
+        connection.Query<'T>(sql, args)
     | None ->
-        connection.QueryAsync<'T>(sql)
-    |> Async.AwaitTask
+        connection.Query<'T>(sql)
