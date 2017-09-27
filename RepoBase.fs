@@ -6,6 +6,7 @@ open Dapper
 open Npgsql
 
 let getConnection =
+    printfn "GET connection"
     let connection = new NpgsqlConnection("Server=127.0.0.1;Port=5432;Database=cctuwise;User Id=postgres; Password=cctechnology;")
     connection.Open()
     connection

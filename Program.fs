@@ -20,6 +20,8 @@ open Giraffe.Middleware
 // open SampleApp.Models
 // open SampleApp.HtmlViews
 
+open datab
+
 // ---------------------------------
 // Error handler
 // ---------------------------------
@@ -63,6 +65,11 @@ let loginHandler =
 let userHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         text ctx.User.Identity.Name next ctx
+
+let calcHandler =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        let userList = UserService.getUser RepoUser.getUser "mxManager" |> Async.RunSynchronously
+        text userList next ctx
 
 let showUserHandler id =
     mustBeAdmin >=>
@@ -119,6 +126,7 @@ let webApp =
                 route  "/login"      >=> loginHandler
                 route  "/logout"     >=> signOff authScheme >=> text "Successfully logged out."
                 route  "/user"       >=> mustBeUser >=> userHandler
+                route  "/calc"       >=> calcHandler
                 // routef "/user/%i"    showUserHandler
                 // route  "/razor"      >=> razorHtmlView "Person" { Name = "Razor" }
                 // route  "/razorHello" >=> razorHtmlView "Hello" ""
