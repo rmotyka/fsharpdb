@@ -38,7 +38,7 @@ let dbQuery<'T> (sql: string) (parameters: (string * obj) list option) =
     | Some(p) ->
         let args = new Dictionary<string, obj>()
         p |> List.iter (fun (key, value) -> args.Add(key, value))
-        connection.QueryAsync<'T>(sql, args) :> Threading.Tasks.Task<seq<'T>>
+        connection.QueryAsync<'T>(sql, args)
     | None ->
-        connection.QueryAsync<'T>(sql) :> Threading.Tasks.Task<seq<'T>>
+        connection.QueryAsync<'T>(sql)
     |> Async.AwaitTask
