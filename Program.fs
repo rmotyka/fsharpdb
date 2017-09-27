@@ -3,7 +3,7 @@ open datab
 
 [<EntryPoint>]
 let main argv =
-    let userList = UserService.getUser RepoUser.getUser "mxManager"
+    let userList = UserService.getUser RepoUser.getUser "mxManager" |> Async.RunSynchronously
     userList |> printfn "%A"
 
     let testUser : Models.User = {

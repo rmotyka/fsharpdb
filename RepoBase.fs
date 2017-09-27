@@ -35,9 +35,10 @@ SqlMapper.AddTypeHandler (OptionHandler<int>())
 let dbQuery<'T> (sql: string) (parameters: (string * obj) list option) = 
     use connection = getConnection
     match parameters with
-    | Some(p) -> 
+    | Some(p) ->
         let args = new Dictionary<string, obj>()
         p |> List.iter (fun (key, value) -> args.Add(key, value))
-        connection.Query<'T>(sql, args)
-    | None    -> 
-        connection.Query<'T>(sql)
+        connection.QueryAsync<'T>(sql, args)
+    | None ->
+        connection.QueryAsync<'T>(sql)
+    |> Async.AwaitTask
