@@ -83,6 +83,11 @@ let userHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         text ctx.User.Identity.Name next ctx
 
+let newTokenHandler =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        let token = datab.JwtGenerator.getToken "Admin" "Admin"
+        text token next ctx
+
 let calcHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
@@ -153,6 +158,7 @@ let webApp =
                 route  "/logout"     >=> signOff authScheme >=> text "Successfully logged out."
                 route  "/user"       >=> mustBeUser >=> userHandler
                 route  "/calc"       >=> calcHandler
+                route  "/token"      >=> newTokenHandler
                 // routef "/user/%i"    showUserHandler
                 // route  "/razor"      >=> razorHtmlView "Person" { Name = "Razor" }
                 // route  "/razorHello" >=> razorHtmlView "Hello" ""

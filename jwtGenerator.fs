@@ -1,31 +1,33 @@
 module datab.JwtGenerator
 
-open Microsoft.IdentityModel.Tokens
+open System
+open System.IdentityModel.Tokens.Jwt
 open System.Security.Claims
+open System.Text
+open Microsoft.AspNetCore.Authorization
+open Microsoft.AspNetCore.Mvc
+open Microsoft.Extensions.Configuration
+open Microsoft.IdentityModel.Tokens
 
 let validatePassword userName password =
     userName = "Admin" && password = "Admin"
 
 let buildToken userName = 
-    let claims =
-    [
-        Claim(ClaimTypes.Name,      "John",  ClaimValueTypes.String, issuer)
-        Claim(ClaimTypes.Surname,   "Doe",   ClaimValueTypes.String, issuer)
-        Claim(ClaimTypes.Role,      "Admin", ClaimValueTypes.String, issuer)
+    let issuer = "http://localhost:5000"
+    let claims = [
+        Claim(ClaimTypes.Name, "John", ClaimValueTypes.String, issuer);
+        Claim(ClaimTypes.Surname, "Doe", ClaimValueTypes.String, issuer);
+        Claim(ClaimTypes.Role, "Admin", ClaimValueTypes.String, issuer)
     ]
 
-    let secretKey = "VerySecretKey";
-    let signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+    let secretKey = "VerySecretKeyase23423dq3ew3e23e23ewdqwerqw3a"
+    let signingKey = SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey))
     let expiresHours = 2
-    let issuer = "http://localhost:5000"
-    let jwt = new JwtSecurityToken(
-        issuer: issuer,
-        audience: "all",
-        claims: claims,
-        notBefore: now,
-        expires: now.Add(new TimeSpan(0, expiresHours, 0, 0)),
-        signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256));
-    let encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+    let (now: Nullable<DateTime>) =  Nullable<DateTime>(DateTime.UtcNow)
+    let expireTime = Nullable<DateTime>(now.Value.Add(TimeSpan(0, expiresHours, 0, 0)))
+    let jwt = JwtSecurityToken(issuer, "all", claims, now, expireTime, SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256))
+    let jwtSecurityTokenHandler = JwtSecurityTokenHandler()
+    let encodedJwt = jwtSecurityTokenHandler.WriteToken(jwt)
     encodedJwt
 
 let getToken userName password =
