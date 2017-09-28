@@ -3,6 +3,6 @@ module datab.RepoUser
 open datab.RepoBase
 open datab.Models
 
-let getUser name = 
+let getUser connection name = 
     let sql = @"select * from public.""User"" where ""Username"" = @username"
-    dbQuery<User> sql (Some (["username" => name]))
+    dbQuery<User> connection sql (Some (["username" => name]))
