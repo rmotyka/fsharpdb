@@ -212,20 +212,23 @@ let configureLogging (loggerBuilder : ILoggingBuilder) =
 [<EntryPoint>]
 let main argv =
 
-    SqlMapper.AddTypeHandler (OptionHandler<string>())
-    SqlMapper.AddTypeHandler (OptionHandler<int>())
+    do datab.RepoAdoBase.getData
 
-    let contentRoot = Directory.GetCurrentDirectory()
-    let webRoot     = Path.Combine(contentRoot, "WebRoot")
-    WebHostBuilder()
-        .UseKestrel()
-        .UseContentRoot(contentRoot)
-        .UseWebRoot(webRoot)
-        .Configure(Action<IApplicationBuilder> configureApp)
-        .ConfigureServices(configureServices)
-        .ConfigureLogging(configureLogging)
-        .Build()
-        .Run()
+
+    // SqlMapper.AddTypeHandler (OptionHandler<string>())
+    // SqlMapper.AddTypeHandler (OptionHandler<int>())
+
+    // let contentRoot = Directory.GetCurrentDirectory()
+    // let webRoot     = Path.Combine(contentRoot, "WebRoot")
+    // WebHostBuilder()
+    //     .UseKestrel()
+    //     .UseContentRoot(contentRoot)
+    //     .UseWebRoot(webRoot)
+    //     .Configure(Action<IApplicationBuilder> configureApp)
+    //     .ConfigureServices(configureServices)
+    //     .ConfigureLogging(configureLogging)
+    //     .Build()
+    //     .Run()
     0
 
 // open System
