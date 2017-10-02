@@ -8,26 +8,30 @@ open Microsoft.FSharp.Reflection
 type UserX =
     { 
         Id: int
-        Username: string
+        Username: string option
     }
 
 let toRecordAut<'R> (reader: DbDataReader) = 
     let rty = typeof<'R>
     let allValues = FSharpType.GetRecordFields (rty)
-    let getValueFromReader name =
-        let ordinal = reader.GetOrdinal(name)
-        reader.GetValue(ordinal)
-    let vals = allValues |> Array.map (fun x -> getValueFromReader x.Name)
+    let getValueFromReader (prop: System.Reflection.PropertyInfo) =
+        let ordinal = reader.GetOrdinal(prop.Name)
+        //let isOption = (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() = typedefof<Option<_>>)
+        let returnValue = reader.GetValue(ordinal)
+        //if isOption then Some returnValue else returnValue
+        returnValue
+        
+    let vals = allValues |> Array.map (getValueFromReader)
 
     FSharpValue.MakeRecord(rty, vals, allowAccessToPrivateRepresentation = false) :?> 'R
 
-// let ToUserX (reader: DbDataReader) =
-//     { 
-//         Id = unbox(reader.["Id"])
-//         Username = unbox(reader.["Username"])
-//     }
+let ToUserX (reader: DbDataReader) =
+    { 
+        Id = unbox(reader.["Id"])
+        Username = Some (unbox(reader.["Username"]))
+    }
 
-let ToUserX = toRecordAut<UserX>
+// let ToUserX = toRecordAut<UserX>
 
 let dbConnection connectionString = 
     let conn = new NpgsqlConnection(connectionString)
@@ -50,4 +54,5 @@ let getData =
     use myConnection = connectionFactory
     use tx = myConnection.BeginTransaction()
     let users = userXLoader myConnection @"Select ""Id"", ""Username"" from public.""User"""
+    tx.Commit()
     printfn "%A" users
