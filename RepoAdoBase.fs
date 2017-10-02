@@ -14,20 +14,26 @@ let ToUserX (reader: DbDataReader) =
     { 
         Id = unbox(reader.["Id"])
         Username = unbox(reader.["Username"])
-    }    
+    }
+let dbConnection connectionString = 
+    let conn = new NpgsqlConnection(connectionString)
+    conn.Open()
+    conn
 
-
-let Query (connectionString: string) toType (sql: string) = 
-  seq { use cn = new NpgsqlConnection(connectionString)
-        let cmd = new NpgsqlCommand(sql, cn) 
+let query toType connection (sql: string) = 
+  seq { let cmd = new NpgsqlCommand(sql, connection)
         // cmd.CommandType <- CommandType.Text
     
-        cn.Open()
         use (reader: DbDataReader) = cmd.ExecuteReader() :> DbDataReader
         while reader.Read() do
             yield reader |> toType
          }
 
+let connectionFactory = dbConnection "Server=127.0.0.1;Port=5432;Database=cctuwise;User Id=postgres; Password=cctechnology;" 
+let userXLoader = query ToUserX
+
 let getData = 
-    let users = Query "Server=127.0.0.1;Port=5432;Database=cctuwise;User Id=postgres; Password=cctechnology;" ToUserX @"Select ""Id"", ""Username"" from public.""User"""
+    use myConnection = connectionFactory
+    use tx = myConnection.BeginTransaction()
+    let users = userXLoader myConnection @"Select ""Id"", ""Username"" from public.""User"""
     printfn "%A" users
